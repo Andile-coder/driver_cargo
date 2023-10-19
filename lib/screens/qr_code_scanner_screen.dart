@@ -1,10 +1,11 @@
+import 'package:driver_cargo/screens/authorise_driver_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 class QrCodeScannerScreen extends StatefulWidget {
-  final String? orderID;
+  final Map<dynamic, dynamic> order;
 
-  const QrCodeScannerScreen({super.key, this.orderID});
+  const QrCodeScannerScreen({super.key, required this.order});
 
   @override
   State<QrCodeScannerScreen> createState() => _QrCodeScannerScreenState();
@@ -70,8 +71,11 @@ class _QrCodeScannerScreenState extends State<QrCodeScannerScreen> {
       Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                FoundCodeScreen(screenClosed: _screenWasClosed, value: code),
+            builder: (context) => AuthoriseDriverScreen(
+              value: code,
+              order: widget.order,
+            ),
+            // FoundCodeScreen(screenClosed: _screenWasClosed, value: code),
           ));
     }
   }

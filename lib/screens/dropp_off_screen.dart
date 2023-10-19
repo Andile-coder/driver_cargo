@@ -10,15 +10,15 @@ import "dart:convert" as convert;
 import 'package:geocoding/geocoding.dart';
 // import 'package:location/location.dart' as Location;
 
-class PickupScreen extends StatefulWidget {
+class DropoffScreen extends StatefulWidget {
   final Map<dynamic, dynamic> order;
-  const PickupScreen({super.key, required this.order});
+  const DropoffScreen({super.key, required this.order});
 
   @override
-  State<PickupScreen> createState() => _PickupScreenState();
+  State<DropoffScreen> createState() => _PickupScreenState();
 }
 
-class _PickupScreenState extends State<PickupScreen> {
+class _PickupScreenState extends State<DropoffScreen> {
   final String apiKey = "JBygABhXcMWTsatfDipt4w1cJCIh6fK0";
   // Location.LocationData? _currentPosition;
   String? _address;
@@ -29,7 +29,6 @@ class _PickupScreenState extends State<PickupScreen> {
     //get driver current phone location
   }
   getOrderOriginLocation() {
-    print(widget.order);
     setState(() {});
   }
 
@@ -50,7 +49,7 @@ class _PickupScreenState extends State<PickupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    String origin = widget.order["pickup_address"];
+    String origin = widget.order["droppoff_address"];
     double originLat = double.parse(origin.split(',')[0]);
     double originLng = double.parse(origin.split(',')[1]);
     var originCo = LatLng.LatLng(originLat, originLng);
@@ -121,13 +120,12 @@ class _PickupScreenState extends State<PickupScreen> {
                 child: Center(
                   child: InkWell(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: ((context) =>
-                              QrCodeScannerScreen(order: widget.order)),
-                        ),
-                      );
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: ((context) => const QrCodeScannerScreen()),
+                      //   ),
+                      // );
                     },
                     child: Container(
                       decoration: const BoxDecoration(
@@ -144,7 +142,7 @@ class _PickupScreenState extends State<PickupScreen> {
                       height: 50,
                       child: const Center(
                           child: Text(
-                        "Arrived",
+                        "Deliver",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 15,

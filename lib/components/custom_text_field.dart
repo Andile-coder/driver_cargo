@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-// ignore: must_be_immutable
 class CustomTextField extends StatelessWidget {
   final TextEditingController? controller;
   final IconData? data;
   final String? hintText;
+  final String? label;
   bool? isObsecre = true;
   bool? enabled = true;
 
@@ -15,60 +15,47 @@ class CustomTextField extends StatelessWidget {
     this.enabled,
     this.hintText,
     this.isObsecre,
+    this.label,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width / 1.3,
-      padding: const EdgeInsets.only(top: 10),
-      margin: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.4),
-            blurRadius: 5,
-            offset: const Offset(0, 5),
-          )
-        ],
-      ),
-      child: TextFormField(
-        enabled: enabled,
-        controller: controller,
-        obscureText: isObsecre!,
-        cursorColor: Theme.of(context).primaryColor,
-        decoration: InputDecoration(
-          hintText: hintText,
-          labelText: hintText,
-          fillColor: Colors.white70,
-          filled: true,
-          contentPadding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.0),
-            borderSide: const BorderSide(
-              color: Colors.grey,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label!,
+          style: const TextStyle(
+              color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        Container(
+          alignment: Alignment.centerLeft,
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                const BoxShadow(
+                    color: Colors.black26, blurRadius: 6, offset: Offset(0, 2))
+              ]),
+          height: 60,
+          child: TextFormField(
+            controller: controller,
+            obscureText: isObsecre!,
+            style: const TextStyle(color: Colors.black87),
+            cursorColor: Theme.of(context).primaryColor,
+            decoration: InputDecoration(
+              hintText: hintText,
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.only(top: 14),
+              prefixIcon: Icon(data, color: const Color(0xff5ac18e)),
+              hintStyle: const TextStyle(color: Colors.black38),
             ),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.0),
-            borderSide: BorderSide(
-              color: Colors.grey.shade400,
-            ),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.0),
-            borderSide: const BorderSide(
-              color: Colors.red,
-              width: 2.0,
-            ),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.0),
-            borderSide: const BorderSide(color: Colors.red, width: 2.0),
           ),
         ),
-      ),
+      ],
     );
   }
 }

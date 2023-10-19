@@ -2,7 +2,8 @@ import 'package:driver_cargo/services/authService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Config {
-  String _host = "https://cargo-ldid.onrender.com";
+  // String _host = "https://cargo-ldid.onrender.com";
+  String _host = "http://192.168.18.4:3000";
   String _port = "3000";
 
   String getHost() {

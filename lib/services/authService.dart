@@ -19,6 +19,7 @@ class Auth {
   Config config = new Config();
 
   Future<int> loginUser({required email, required password}) async {
+    print("$email, $password");
     try {
       Response response = await post(
           Uri.parse(config.getHost() + "/driver/login"),
@@ -57,8 +58,10 @@ class Auth {
                 "email": email,
                 "password": password,
                 "username": username,
-                'cell_phone_number': cellPhoneNumber
+                'cell_phone_number': cellPhoneNumber,
+                "licence_number": "1346",
               }));
+      print(response.body);
       return response.statusCode;
     } catch (e) {
       print(e);

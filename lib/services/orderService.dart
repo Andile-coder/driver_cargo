@@ -98,4 +98,27 @@ class OrderService {
     }
     return null;
   }
+
+  Future<int> setOrderToInProgress(String order_number) async {
+    try {
+      String? token = await config.getToken();
+      Response response = await patch(
+        Uri.parse(config.getHost() + "/orders/inprogress/" + order_number),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          "Authorization": "Bearer " + token!
+        },
+      );
+      print("response ${response.statusCode}");
+      if (response.statusCode == 201) {
+        Map<dynamic, dynamic> order = jsonDecode(response.body);
+        return response.statusCode;
+      } else {
+        response.statusCode;
+      }
+    } catch (e) {
+      print(e);
+    }
+    return 0;
+  }
 }

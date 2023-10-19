@@ -7,17 +7,11 @@ import 'package:driver_cargo/config/index.dart';
 import 'package:driver_cargo/screens/earnings_screen.dart';
 import 'package:driver_cargo/screens/new_orders_screen.dart';
 import 'package:driver_cargo/services/authService.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart';
-// import 'package:google_fonts/google_fonts.dart';
-// import 'package:riders_food_app/assistantMethods/get_current_location.dart';
-// import 'package:riders_food_app/authentication/login.dart';
-// import 'package:riders_food_app/screens/earnings_screen.dart';
-// import 'package:riders_food_app/screens/history_screen.dart';
-// import 'package:riders_food_app/screens/new_orders_screen.dart';
-// import 'package:riders_food_app/screens/not_yet_delivered_screen.dart';
-// import 'package:riders_food_app/screens/parcel_in_progress_screen.dart';
 
 import '../global/global.dart';
 
@@ -156,7 +150,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+    ));
     UserLocation uLocation = UserLocation();
     Config config = Config();
     void getUser() async {
@@ -203,94 +199,120 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: FractionalOffset(-2.0, 0.0),
-              end: FractionalOffset(5.0, -1.0),
-              colors: [
-                Color(0xFFFFFFFF),
-                Color(0xFFFAC898),
+    return MaterialApp(
+      theme: ThemeData(primarySwatch: Colors.green, fontFamily: 'Montserrat'),
+      title: "Last Mile Delivery",
+      home: Scaffold(
+          body: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+              borderRadius: const BorderRadius.only(
+                bottomRight: Radius.circular(50),
+              ),
+            ),
+            child: Column(
+              children: [
+                const SizedBox(
+                  height: 50,
+                ),
+                ListTile(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 30),
+                    tileColor: const Color(0xff5ac18e),
+                    title: Text("Hi ${user?[0]} !",
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineSmall
+                            ?.copyWith(color: Colors.white)),
+                    subtitle: Text("Last Mile Delivery",
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(color: Colors.white)),
+                    trailing: const CircleAvatar(
+                      radius: 30,
+                      backgroundImage: AssetImage("assets/images/avatar.jpeg"),
+                    )),
+                SizedBox(
+                  height: 30,
+                )
               ],
             ),
           ),
-        ),
-        title: Text(
-          // "Welcome " + sharedPreferences!.getString("name")!.toUpperCase(),
-          "welcome ${user?[0]}",
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-        elevation: 0,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: GestureDetector(
-              onTap: () {},
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(50),
-                child: Material(
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(80),
-                  ),
-                  elevation: 10,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.amber.withOpacity(1),
-                          offset: const Offset(-1, 2),
-                          blurRadius: 20,
-                        )
-                      ],
-                    ),
-                    width: 60,
-                    height: 60,
-                    child: CircleAvatar(
-                        //we get the profile image from sharedPreferences (global.dart)
-                        // backgroundImage: NetworkImage(
-                        //   sharedPreferences!.getString("photoUrl")!,
-                        // ),
-                        ),
-                  ),
+          Container(
+              color: Theme.of(context).primaryColor,
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius:
+                        BorderRadius.only(topLeft: Radius.circular(100))),
+                child: GridView.count(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 40,
+                  mainAxisSpacing: 30,
+                  children: [
+                    itemDashboard('New Orders', Icons.assignment, Colors.red,
+                        NewOrdersScreen()),
+                    itemDashboard('Inprogress ', Icons.airport_shuttle,
+                        Colors.purple, NewOrdersScreen()),
+                    itemDashboard('History', Icons.done_all, Colors.green,
+                        NewOrdersScreen()),
+                    itemDashboard('Invoice', CupertinoIcons.money_dollar_circle,
+                        Colors.indigo, NewOrdersScreen()),
+                    itemDashboard('Upload', CupertinoIcons.add_circled,
+                        Colors.teal, NewOrdersScreen()),
+                    itemDashboard('Feedback', CupertinoIcons.chat_bubble_2,
+                        Colors.brown, NewOrdersScreen()),
+                    itemDashboard('About', CupertinoIcons.question_circle,
+                        Colors.blue, NewOrdersScreen()),
+                    itemDashboard('Contact', CupertinoIcons.phone,
+                        Colors.pinkAccent, NewOrdersScreen()),
+                  ],
                 ),
-              ),
-            ),
-          )
+              ))
         ],
-      ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: FractionalOffset(-2.0, 0.0),
-            end: FractionalOffset(5.0, -1.0),
-            colors: [
-              Color(0xFFFFFFFF),
-              Color(0xFFFAC898),
+      )),
+    );
+  }
+
+  itemDashboard(
+          String title, IconData iconData, Color background, Widget toPage) =>
+      GestureDetector(
+        onTap: () {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => toPage,
+          ));
+        },
+        child: Container(
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                    offset: const Offset(0, 5),
+                    color: Theme.of(context).primaryColor.withOpacity(.2),
+                    spreadRadius: 2,
+                    blurRadius: 5)
+              ]),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: background,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(iconData, color: Colors.white)),
+              const SizedBox(height: 8),
+              Text(title.toUpperCase(),
+                  style: Theme.of(context).textTheme.titleMedium)
             ],
           ),
         ),
-        padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 1),
-        child: GridView.count(
-          crossAxisCount: 2,
-          padding: const EdgeInsets.all(2),
-          children: [
-            makeDashboardItem("New Available", Icons.assignment, 0),
-            makeDashboardItem("Parcels in Progress", Icons.airport_shuttle, 1),
-            makeDashboardItem("Not Yet Delivered", Icons.location_history, 2),
-            makeDashboardItem("History", Icons.done_all, 3),
-            makeDashboardItem("Total Earnings", Icons.monetization_on, 4),
-            makeDashboardItem("Logout", Icons.logout, 5),
-          ],
-        ),
-      ),
-    );
-  }
+      );
 }

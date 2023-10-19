@@ -8,8 +8,10 @@ import 'package:driver_cargo/components/error_dialog.dart';
 import 'package:driver_cargo/components/header_widget.dart';
 import 'package:driver_cargo/components/loading_dialog.dart';
 import 'package:driver_cargo/screens/home_screen.dart';
+import 'package:driver_cargo/services/authService.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
@@ -93,367 +95,236 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return null;
   }
 
-//function for getting image
-  Future<void> _getImage() async {
-    imageXFile = await _picker.pickImage(source: ImageSource.gallery);
-
-    setState(() {
-      imageXFile;
-    });
-  }
-
 //Form Validation
   Future<void> signUpFormValidation() async {
     //checking if user selected image
-    Route newRoute = MaterialPageRoute(builder: (c) => const HomeScreen());
-    Navigator.pushReplacement(context, newRoute);
-    if (imageXFile == null) {
-      setState(
-        () {
-          // imageXFile == "images/bg.png";
-          showDialog(
-            context: context,
-            builder: (c) {
-              return const ErrorDialog(
-                message: "Please select an image",
-              );
-            },
-          );
-        },
-      );
-    } else {
-      if (passwordController.text == confirmpasswordController.text) {
-        //nested if (cheking if controllers empty or not)
-        if (confirmpasswordController.text.isNotEmpty &&
-            emailController.text.isNotEmpty &&
-            nameController.text.isNotEmpty &&
-            phoneController.text.isNotEmpty &&
-            locationController.text.isNotEmpty) {
-          //start uploading image
-          showDialog(
-            context: context,
-            builder: (c) {
-              return const LoadingDialog(
-                message: "Registering Account",
-              );
-            },
-          );
 
-          String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-          // fStorage.Reference reference = fStorage.FirebaseStorage.instance
-          //     .ref()
-          //     .child("riders")
-          //     .child(fileName);
-          // fStorage.UploadTask uploadTask =
-          //     reference.putFile(File(imageXFile!.path));
-          // fStorage.TaskSnapshot taskSnapshot =
-          //     await uploadTask.whenComplete(() {});
-          // await taskSnapshot.ref.getDownloadURL().then((url) {
-          //   sellerImageUrl = url;
-
-          //   // save info to firestore
-          //   AuthenticateSellerAndSignUp();
-          // });
-        }
-        //if there is empty place show this message
-        else {
-          showDialog(
-            context: context,
-            builder: (c) {
-              return const ErrorDialog(
-                message: "Please fill the required info for Registration. ",
-              );
-            },
-          );
-        }
+    if (passwordController.text == confirmpasswordController.text) {
+      //nested if (cheking if controllers empty or not)
+      if (confirmpasswordController.text.isNotEmpty &&
+          emailController.text.isNotEmpty &&
+          nameController.text.isNotEmpty &&
+          phoneController.text.isNotEmpty) {
+        //start uploading image
+        showDialog(
+          context: context,
+          builder: (c) {
+            return const LoadingDialog(
+              message: "Registering Account",
+            );
+          },
+        );
+        registerNow();
       } else {
-        //show an error if passwords do not match
         showDialog(
           context: context,
           builder: (c) {
             return const ErrorDialog(
-              message: "Password do not match",
+              message: "Please fill the required info for Registration. ",
             );
           },
         );
       }
+    } else {
+      //show an error if passwords do not match
+      showDialog(
+        context: context,
+        builder: (c) {
+          return const ErrorDialog(
+            message: "Password do not match",
+          );
+        },
+      );
     }
   }
 
-  // ignore: non_constant_identifier_names
-  // void AuthenticateSellerAndSignUp() async {
-  //   User? currentUser;
-  //   await firebaseAuth
-  //       .createUserWithEmailAndPassword(
-  //     email: emailController.text.trim(),
-  //     password: passwordController.text.trim(),
-  //   )
-  //       .then((auth) {
-  //     currentUser = auth.user;
-  //   }).catchError(
-  //     (error) {
-  //       Navigator.pop(context);
-  //       showDialog(
-  //         context: context,
-  //         builder: (c) {
-  //           return ErrorDialog(
-  //             message: error.message.toString(),
-  //           );
-  //         },
-  //       );
-  //     },
-  //   );
+  registerNow() async {
+    showDialog(
+      context: context,
+      builder: (c) {
+        return const LoadingDialog(
+          message: "Checking Credentials...",
+        );
+      },
+    );
 
-  //   if (currentUser != null) {
-  //     saveDataToFirestore(currentUser!).then((value) {
-  //       Navigator.pop(context);
-  //       //send user to Home Screen
-  //       Route newRoute = MaterialPageRoute(builder: (c) => const HomeScreen());
-  //       Navigator.pushReplacement(context, newRoute);
-  //     });
-  //   }
-  // }
+    Auth user = Auth();
+    String email = emailController.text.trim();
+    String password = passwordController.text.trim();
+    String username = nameController.text.trim();
+    String cellPhoneNumber = phoneController.text.trim();
+    int statusCode = await user.RegisterUser(
+        email: email,
+        password: password,
+        username: username,
+        cellPhoneNumber: cellPhoneNumber);
 
-//saving seller information to firestore
-  // Future saveDataToFirestore(User currentUser) async {
-  //   FirebaseFirestore.instance.collection("riders").doc(currentUser.uid).set(
-  //     {
-  //       "riderUID": currentUser.uid,
-  //       "riderEmail": currentUser.email,
-  //       "riderName": nameController.text.trim(),
-  //       "riderAvatarUrl": sellerImageUrl,
-  //       "phone": phoneController.text.trim(),
-  //       "address": completeAddress,
-  //       "status": "approved",
-  //       "earnings": 0.0,
-  //       "lat": position!.latitude,
-  //       "lng": position!.longitude,
-  //     },
-  //   );
+    if (statusCode == 201) {
+      Navigator.pop(context);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (c) => const LoginScreen(),
+        ),
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (c) {
+          return const ErrorDialog(
+            message: "Failed to login.",
+          );
+        },
+      );
+    }
+  }
 
-  //   // save data locally (to access data easly from phone storage)
-  //   sharedPreferences = await SharedPreferences.getInstance();
-  //   await sharedPreferences!.setString("uid", currentUser.uid);
-  //   await sharedPreferences!.setString("email", currentUser.email.toString());
-  //   await sharedPreferences!.setString("name", nameController.text.trim());
-  //   await sharedPreferences!.setString("photoUrl", sellerImageUrl);
-  // }
+  Widget buildSignUpBtn() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 25),
+      width: double.infinity,
+      child: ElevatedButton(
+        child: Text(
+          "SUBMIT",
+          style: TextStyle(
+              color: Color(0xff5ac18e),
+              fontSize: 18,
+              fontWeight: FontWeight.bold),
+        ),
+        onPressed: () {
+          signUpFormValidation();
+        },
+        style: ElevatedButton.styleFrom(
+          elevation: 5,
+          backgroundColor: Colors.white,
+          padding: EdgeInsets.all(15),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        ),
+      ),
+    );
+  }
+
+  Widget buildLoginBtn() {
+    return GestureDetector(
+      onTap: () => Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => const LoginScreen())),
+      child: RichText(
+        text: TextSpan(children: [
+          TextSpan(
+              text: "Already have an account? ",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500)),
+          TextSpan(
+              text: "Sign in",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold))
+        ]),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: FractionalOffset(-2.0, 0.0),
-            end: FractionalOffset(5.0, -1.0),
-            colors: [
-              Color(0xFFFFFFFF),
-              Color(0xFFFAC898),
-            ],
-          ),
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Stack(
-                children: [
-                  const SizedBox(
-                    height: 150,
-                    child: HeaderWidget(
-                      150,
-                      false,
-                      Icons.add,
-                    ),
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 20,
-                          offset: const Offset(0, 5),
-                        )
-                      ],
-                    ),
-                    margin: const EdgeInsets.fromLTRB(25, 50, 25, 10),
-                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                    alignment: Alignment.center,
-                    child: InkWell(
-                      onTap: () {
-                        _getImage();
-                      },
-                      child: CircleAvatar(
-                        radius: MediaQuery.of(context).size.width * 0.20,
-                        backgroundColor: Colors.white,
-                        backgroundImage: imageXFile == null
-                            ? null
-                            : FileImage(
-                                File(imageXFile!.path),
-                              ),
-                        child: imageXFile == null
-                            ? Icon(
-                                Icons.person_add_alt_1,
-                                size: MediaQuery.of(context).size.width * 0.20,
-                                color: Colors.grey,
-                              )
-                            : null,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    CustomTextField(
-                      data: Icons.person,
-                      controller: nameController,
-                      hintText: "Name",
-                      isObsecre: false,
-                    ),
-                    CustomTextField(
-                      data: Icons.email,
-                      controller: emailController,
-                      hintText: "Email",
-                      isObsecre: false,
-                    ),
-                    CustomTextField(
-                      data: Icons.lock,
-                      controller: passwordController,
-                      hintText: "Password",
-                      isObsecre: true,
-                    ),
-                    CustomTextField(
-                      data: Icons.lock,
-                      controller: confirmpasswordController,
-                      hintText: "Confirm password",
-                      isObsecre: true,
-                    ),
-                    CustomTextField(
-                      data: Icons.phone_android_outlined,
-                      controller: phoneController,
-                      hintText: "Phone nummber",
-                      isObsecre: false,
-                    ),
-                    Row(
+        body: AnnotatedRegion<SystemUiOverlayStyle>(
+            value: SystemUiOverlayStyle.light,
+            child: Stack(
+              children: [
+                Container(
+                  height: double.infinity,
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                        Color(0x665ac18e),
+                        Color(0x995ac18e),
+                        Color(0xcc5ac18e),
+                        Color(0xff5ac18e)
+                      ])),
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 25, vertical: 60),
+                    child: Column(
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 30),
-                          child: SizedBox(
-                            width: 300,
-                            child: CustomTextField(
-                              data: Icons.my_location,
-                              controller: locationController,
-                              hintText: "My Current Address",
-                              isObsecre: false,
-                              enabled: false,
-                            ),
+                        const Text(
+                          "Driver's Register",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Form(
+                          key: _formKey,
+                          child: Column(
+                            children: [
+                              CustomTextField(
+                                data: Icons.person,
+                                controller: nameController,
+                                hintText: "Full Name",
+                                isObsecre: false,
+                                label: "Full Name",
+                              ),
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              CustomTextField(
+                                data: Icons.email,
+                                controller: emailController,
+                                hintText: "Email",
+                                isObsecre: false,
+                                label: "Email",
+                              ),
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              CustomTextField(
+                                data: Icons.phone_android_outlined,
+                                controller: phoneController,
+                                hintText: "Phone nummber",
+                                isObsecre: false,
+                                label: "Phone Number",
+                              ),
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              CustomTextField(
+                                data: Icons.lock,
+                                controller: passwordController,
+                                hintText: "Password",
+                                label: "Password",
+                                isObsecre: true,
+                              ),
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              CustomTextField(
+                                data: Icons.lock,
+                                controller: confirmpasswordController,
+                                hintText: "Confirm password",
+                                isObsecre: true,
+                                label: "Confirm Password",
+                              ),
+                              buildSignUpBtn(),
+                              buildLoginBtn(),
+                            ],
                           ),
                         ),
-                        Center(
-                          child: IconButton(
-                            onPressed: () {
-                              getCurrenLocation();
-                            },
-                            icon: const Icon(
-                              Icons.location_on,
-                              size: 40,
-                            ),
-                            color: Colors.red,
-                          ),
-                        )
                       ],
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 15),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 30),
-                child: Container(
-                  decoration: BoxDecoration(
-                    boxShadow: const [
-                      BoxShadow(
-                          color: Colors.black26,
-                          offset: Offset(0, 4),
-                          blurRadius: 5.0)
-                    ],
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      stops: [0.0, 1.0],
-                      colors: [
-                        Colors.amber,
-                        Colors.black,
-                      ],
-                    ),
-                    color: Colors.deepPurple.shade300,
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                      ),
-                      minimumSize:
-                          MaterialStateProperty.all(const Size(50, 50)),
-                      backgroundColor:
-                          MaterialStateProperty.all(Colors.transparent),
-                      shadowColor:
-                          MaterialStateProperty.all(Colors.transparent),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(40, 10, 40, 10),
-                      child: Text(
-                        'Sign Up'.toUpperCase(),
-                        style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
-                      ),
-                    ),
-                    onPressed: () {
-                      signUpFormValidation();
-                    },
                   ),
                 ),
-              ),
-              Container(
-                margin: const EdgeInsets.fromLTRB(10, 20, 10, 20),
-                child: Text.rich(
-                  TextSpan(
-                    children: [
-                      const TextSpan(text: "Already have an account? "),
-                      TextSpan(
-                        text: 'Login',
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const LoginScreen()));
-                          },
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+              ],
+            )));
   }
 }

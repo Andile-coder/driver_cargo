@@ -9,6 +9,7 @@ import 'package:driver_cargo/screens/home_screen.dart';
 import 'package:driver_cargo/services/authService.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 // import 'package:google_fonts/google_fonts.dart';
 // import 'package:riders_food_app/authentication/register.dart';
 
@@ -71,213 +72,177 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     } else {
-      print(statusCode);
+      showDialog(
+        context: context,
+        builder: (c) {
+          return const ErrorDialog(
+            message: "Failed to login.",
+          );
+        },
+      );
     }
-
-    // if (currentUser != null) {
-    //   readDataAndSetDataLocally(currentUser!);
-    // }
   }
 
-//read data from firestore and save it locally
-  // Future readDataAndSetDataLocally(User currentUser) async {
-  //   await FirebaseFirestore.instance
-  //       .collection("riders")
-  //       .doc(currentUser.uid)
-  //       .get()
-  //       .then(
-  //     (snapshot) async {
-  //       //check if the user is rider
-  //       if (snapshot.exists) {
-  //         await sharedPreferences!.setString("uid", currentUser.uid);
-  //         await sharedPreferences!
-  //             .setString("email", snapshot.data()!["riderEmail"]);
-  //         await sharedPreferences!
-  //             .setString("name", snapshot.data()!["riderName"]);
-  //         await sharedPreferences!
-  //             .setString("photoUrl", snapshot.data()!["riderAvatarUrl"]);
+  //widget for login screen
+  Widget buildForgotPassBtn() {
+    return Container(
+      alignment: Alignment.centerRight,
+      child: TextButton(
+          onPressed: () => print(""),
+          child: const Text(
+            'Forgot Password?',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          )),
+    );
+  }
 
-  //         Navigator.pop(context);
-  //         Navigator.push(
-  //           context,
-  //           MaterialPageRoute(
-  //             builder: (c) => const HomeScreen(),
-  //           ),
-  //         );
-  //       }
-  //       //if user is not a rider
-  //       else {
-  //         // firebaseAuth.signOut();
-  //         Navigator.pop(context);
+  Widget buildSignUpBtn() {
+    return GestureDetector(
+      onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const RegisterScreen())),
+      child: RichText(
+        text: const TextSpan(children: [
+          TextSpan(
+              text: "Don't have an account? ",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500)),
+          TextSpan(
+              text: "Sign Up",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold))
+        ]),
+      ),
+    );
+  }
 
-  //         Navigator.push(
-  //           context,
-  //           MaterialPageRoute(
-  //             builder: (c) => const LoginScreen(),
-  //           ),
-  //         );
-  //         showDialog(
-  //           context: context,
-  //           builder: (c) {
-  //             return const ErrorDialog(
-  //               message: "No record exist.",
-  //             );
-  //           },
-  //         );
-  //       }
-  //     },
-  //   );
-  // }
+  Widget buildRememberCb() {
+    return Container(
+        height: 20,
+        child: Row(
+          children: [
+            Theme(
+              data: ThemeData(unselectedWidgetColor: Colors.white),
+              child: Checkbox(
+                value: true,
+                checkColor: Colors.green,
+                activeColor: Colors.white,
+                onChanged: (value) {
+                  setState(() {
+                    // isRememberMe = value!;
+                  });
+                },
+              ),
+            ),
+            const Text(
+              "Remember me",
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            )
+          ],
+        ));
+  }
+
+  Widget buildLoginBtn() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 25),
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: () {
+          formValidation();
+        },
+        style: ElevatedButton.styleFrom(
+          elevation: 5,
+          backgroundColor: Colors.white,
+          padding: const EdgeInsets.all(15),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        ),
+        child: const Text(
+          "LOGIN",
+          style: TextStyle(
+              color: Color(0xff5ac18e),
+              fontSize: 18,
+              fontWeight: FontWeight.bold),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: FractionalOffset(-2.0, 0.0),
-            end: FractionalOffset(5.0, -1.0),
-            colors: [
-              Color(0xFFFFFFFF),
-              Color(0xFFFAC898),
-            ],
-          ),
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              SizedBox(
-                height: _headerHeight,
-                child: HeaderWidget(
-                  _headerHeight,
-                  true,
-                  Icons.motorcycle,
-                ), //let's create a common header widget
-              ),
-              const SizedBox(height: 50),
-              Center(
-                child: Text(
-                  'Riders Login',
-                  style: TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black),
-                ),
-              ),
-              Form(
-                key: _formKey,
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.light,
+        child: Stack(
+          children: [
+            Container(
+              height: double.infinity,
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                    Color(0x665ac18e),
+                    Color(0x995ac18e),
+                    Color(0xcc5ac18e),
+                    Color(0xff5ac18e)
+                  ])),
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 25, vertical: 120),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CustomTextField(
-                      data: Icons.email,
-                      controller: emailController,
-                      hintText: "Email",
-                      isObsecre: false,
+                    const Text(
+                      'Drivers Sign In',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold),
                     ),
-                    CustomTextField(
-                      data: Icons.lock,
-                      controller: passwordController,
-                      hintText: "Password",
-                      isObsecre: true,
+                    const SizedBox(
+                      height: 50,
                     ),
-                    const SizedBox(height: 15),
-                    Container(
-                      margin: const EdgeInsets.fromLTRB(10, 0, 10, 20),
-                      alignment: Alignment.center,
-                      child: GestureDetector(
-                        onTap: () {
-                          // Navigator.push( context, MaterialPageRoute( builder: (context) => ForgotPasswordPage()), );
-                        },
-                        child: const Text(
-                          "Forgot your password?",
-                          style: TextStyle(
-                            color: Colors.grey,
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          CustomTextField(
+                            data: Icons.email,
+                            controller: emailController,
+                            hintText: "Email",
+                            label: "Email",
+                            isObsecre: false,
                           ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        boxShadow: const [
-                          BoxShadow(
-                              color: Colors.black26,
-                              offset: Offset(0, 4),
-                              blurRadius: 5.0)
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          CustomTextField(
+                            data: Icons.lock,
+                            controller: passwordController,
+                            hintText: "Password",
+                            isObsecre: true,
+                            label: "Password",
+                          ),
+                          const SizedBox(height: 15),
+                          buildForgotPassBtn(),
+                          buildRememberCb(),
+                          buildLoginBtn(),
+                          buildSignUpBtn(),
                         ],
-                        gradient: const LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          stops: [0.0, 1.0],
-                          colors: [
-                            Colors.amber,
-                            Colors.black,
-                          ],
-                        ),
-                        color: Colors.deepPurple.shade300,
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: ElevatedButton(
-                        style: ButtonStyle(
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                            ),
-                          ),
-                          minimumSize:
-                              MaterialStateProperty.all(const Size(50, 50)),
-                          backgroundColor:
-                              MaterialStateProperty.all(Colors.transparent),
-                          shadowColor:
-                              MaterialStateProperty.all(Colors.transparent),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(40, 10, 40, 10),
-                          child: Text(
-                            'Sign In'.toUpperCase(),
-                            style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          ),
-                        ),
-                        onPressed: () {
-                          formValidation();
-                        },
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.fromLTRB(10, 20, 10, 20),
-                      child: Text.rich(
-                        TextSpan(
-                          children: [
-                            const TextSpan(text: "Don't have an account? "),
-                            TextSpan(
-                              text: 'Create',
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const RegisterScreen()));
-                                },
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).primaryColor,
-                              ),
-                            ),
-                          ],
-                        ),
                       ),
                     ),
                   ],
                 ),
-              )
-            ],
-          ),
+              ),
+            ),
+          ],
         ),
       ),
     );
