@@ -109,7 +109,7 @@ class OrderService {
           "Authorization": "Bearer " + token!
         },
       );
-      print("response ${response.statusCode}");
+
       if (response.statusCode == 201) {
         Map<dynamic, dynamic> order = jsonDecode(response.body);
         return response.statusCode;

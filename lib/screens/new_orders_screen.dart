@@ -52,11 +52,15 @@ class _NewOrdersScreenState extends State<NewOrdersScreen> {
                   itemCount: driverOrders.length,
                   itemBuilder: (context, index) {
                     String? orderID = driverOrders[index]!["order_number"];
-                    return OrderCard(
-                      itemCount: driverOrders.length,
-                      orderID: orderID,
-                      seperateQuantitiesList: ["20"],
-                      model: driverOrders[index],
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 4),
+                      child: OrderCard(
+                        itemCount: driverOrders.length,
+                        orderID: orderID,
+                        seperateQuantitiesList: ["20"],
+                        model: driverOrders[index],
+                      ),
                     );
                   })
               : Center(

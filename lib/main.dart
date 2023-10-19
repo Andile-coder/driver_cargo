@@ -1,3 +1,4 @@
+import 'package:driver_cargo/auth_screens/login.dart';
 import 'package:driver_cargo/screens/order_details_screen.dart';
 import 'package:driver_cargo/splash_screen/splash_screen.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,7 @@ Future<void> main() async {
   var sharedPreferences = await SharedPreferences.getInstance();
   // await Firebase.initializeApp();
 
-  runApp(const MaterialApp(home: SplashScreen()));
+  runApp(const MaterialApp(home: LoginScreen()));
 }
 
 class MyApp extends StatelessWidget {

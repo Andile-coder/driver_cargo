@@ -87,12 +87,12 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
             const Divider(thickness: 4),
             orderDetailed["status"] == "DELIVERED"
                 ? Image.asset(
-                    "images/success.jpg",
+                    "assets/images/success.jpg",
                     height: 300,
                     width: 300,
                   )
                 : Image.asset(
-                    "images/confirm_pick.png",
+                    "assets/images/confirm_pick.png",
                     height: 300,
                     width: 300,
                   ),

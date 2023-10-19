@@ -33,10 +33,9 @@ class StatusBanner extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: ((context) => const HomeScreen())));
+              Navigator.pop(
+                context,
+              );
             },
             child: const Icon(
               Icons.arrow_back,

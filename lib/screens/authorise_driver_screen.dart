@@ -38,6 +38,7 @@ class _AuthoriseDriverScreenState extends State<AuthoriseDriverScreen> {
       driver = await user.getUser();
       driver_id = driver![1];
       qr_code_data = json.decode(widget.value);
+      print("QR code data ${qr_code_data!['driver_id']}");
       if (qr_code_data!['driver_id'] != driver_id) {
         is_authorised = false;
       } else {
@@ -84,7 +85,13 @@ class _AuthoriseDriverScreenState extends State<AuthoriseDriverScreen> {
               : Column(
                   children: [
                     const Text("Unauthorised"),
-                    TextButton(onPressed: () {}, child: const Text("Back"))
+                    TextButton(
+                        onPressed: () {
+                          Navigator.pop(
+                            context,
+                          );
+                        },
+                        child: const Text("Back"))
                   ],
                 ),
         ),

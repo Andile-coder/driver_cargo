@@ -70,7 +70,7 @@ class _ShipmentAddressDesignState extends State<ShipmentAddressDesign> {
           padding: const EdgeInsets.all(10.0),
           child: Column(
             children: [
-              widget.order["status"] == "BOOKED"
+              widget.order["status"] == "ACCEPTED"
                   ? Center(
                       child: InkWell(
                         onTap: () {
@@ -106,43 +106,37 @@ class _ShipmentAddressDesignState extends State<ShipmentAddressDesign> {
                         ),
                       ),
                     )
-                  : const Text(""),
-              const SizedBox(
-                height: 10,
-              ),
-              Center(
-                child: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: ((context) => const SplashScreen()),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: FractionalOffset(0.0, 0.0),
-                        end: FractionalOffset(3.0, -1.0),
-                        colors: [
-                          Color(0xFF004B8D),
-                          Color(0xFFffffff),
-                        ],
+                  : Center(
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: FractionalOffset(0.0, 0.0),
+                              end: FractionalOffset(3.0, -1.0),
+                              colors: [
+                                Color(0xFF004B8D),
+                                Color(0xFFffffff),
+                              ],
+                            ),
+                          ),
+                          width: MediaQuery.of(context).size.width - 40,
+                          height: 50,
+                          child: const Center(
+                              child: Text(
+                            "Go back",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                            ),
+                          )),
+                        ),
                       ),
                     ),
-                    width: MediaQuery.of(context).size.width - 40,
-                    height: 50,
-                    child: const Center(
-                        child: Text(
-                      "Go back",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                      ),
-                    )),
-                  ),
-                ),
+              const SizedBox(
+                height: 10,
               ),
             ],
           ),
